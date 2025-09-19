@@ -2,7 +2,6 @@ requests>=2.31.0
 pyyaml>=6.0
 jsonschema>=4.17.0
 cryptography>=41.0.0
-base64
 urllib3>=2.0.0
 schedule>=1.2.0
 python-dotenv>=1.0.0

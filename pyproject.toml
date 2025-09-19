@@ -1,0 +1,134 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "free-proxy-configurations"
+version = "1.0.0"
+description = "Automatically updated free proxy configurations for multiple protocols"
+authors = [{name = "ryzalain", email = "ryzalain@users.noreply.github.com"}]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: Proxy Servers",
+    "Topic :: Security",
+    "Topic :: System :: Networking",
+]
+keywords = ["proxy", "vpn", "privacy", "security", "v2ray", "shadowsocks", "trojan"]
+
+dependencies = [
+    "requests>=2.28.0",
+    "pyyaml>=6.0",
+    "jsonschema>=4.17.0",
+    "cryptography>=3.4.8",
+    "schedule>=1.2.0",
+    "python-dotenv>=1.0.0",
+    "jinja2>=3.1.0",
+    "click>=8.1.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-xdist>=3.0.0",
+    "pytest-asyncio>=0.21.0",
+    "flake8>=6.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.0.0",
+    "bandit>=1.7.0",
+    "safety>=2.3.0",
+    "pre-commit>=3.0.0",
+    "coverage>=7.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/ryzalain/free-proxy-configurations"
+Repository = "https://github.com/ryzalain/free-proxy-configurations.git"
+Issues = "https://github.com/ryzalain/free-proxy-configurations/issues"
+Documentation = "https://github.com/ryzalain/free-proxy-configurations/blob/main/README.md"
+
+[project.scripts]
+proxy-generator = "scripts.proxy_generator:main"
+proxy-updater = "scripts.auto_updater:main"
+proxy-validator = "tests.config_validator:main"
+
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\\.pyi?$'
+extend-exclude = '''
+(
+  \\.eggs
+  | \\.git
+  | \\.hg
+  | \\.mypy_cache
+  | \\.tox
+  | \\.venv
+  | build
+  | dist
+)
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["scripts", "tests"]
+skip_glob = ["*/migrations/*"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+disallow_untyped_decorators = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+ignore_missing_imports = true
+
+[tool.coverage.run]
+source = ["scripts"]
+omit = [
+    "*/tests/*",
+    "*/venv/*",
+    "*/.venv/*",
+    "*/env/*",
+    "*/.env/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".venv", "env", ".env"]
+skips = ["B101", "B601"]

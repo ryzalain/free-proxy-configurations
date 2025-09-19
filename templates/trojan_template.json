@@ -1,0 +1,14 @@
+{
+  "password": "password-placeholder",
+  "remote_addr": "server.example.com",
+  "remote_port": 443,
+  "ssl": {
+    "enabled": true,
+    "sni": "server.example.com",
+    "alpn": [
+      "h2",
+      "http/1.1"
+    ]
+  },
+  "remarks": "Trojan Template"
+}

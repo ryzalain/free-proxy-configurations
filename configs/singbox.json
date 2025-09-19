@@ -1,0 +1,178 @@
+{
+  "log": {
+    "level": "info",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "cloudflare",
+        "address": "https://1.1.1.1/dns-query",
+        "detour": "direct"
+      },
+      {
+        "tag": "local",
+        "address": "local",
+        "detour": "direct"
+      }
+    ],
+    "rules": [
+      {
+        "geosite": "cn",
+        "server": "local"
+      }
+    ],
+    "final": "cloudflare",
+    "strategy": "ipv4_only"
+  },
+  "inbounds": [
+    {
+      "type": "mixed",
+      "listen": "127.0.0.1",
+      "listen_port": 1080,
+      "sniff": true,
+      "sniff_override_destination": true
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "vmess-us",
+      "type": "vmess",
+      "server": "us1.example.com",
+      "server_port": 10086,
+      "uuid": "cc663a9b-480b-4e15-8b65-9f87b5ae82b4",
+      "security": "auto",
+      "alter_id": 0,
+      "global_padding": false,
+      "authenticated_length": true,
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "us1.example.com"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "us1.example.com",
+        "alpn": [
+          "h2",
+          "http/1.1"
+        ]
+      }
+    },
+    {
+      "tag": "ss-us",
+      "type": "shadowsocks",
+      "server": "us1.example.com",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "4pnB2A!y7Kdiq7MG",
+      "plugin": "v2ray-plugin",
+      "plugin_opts": "server;tls;host=us1.example.com"
+    },
+    {
+      "tag": "vmess-gb",
+      "type": "vmess",
+      "server": "uk1.example.com",
+      "server_port": 10086,
+      "uuid": "5c1f0ef2-6e42-40ec-be30-51fd48a5f5bd",
+      "security": "auto",
+      "alter_id": 0,
+      "global_padding": false,
+      "authenticated_length": true,
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "uk1.example.com"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "uk1.example.com",
+        "alpn": [
+          "h2",
+          "http/1.1"
+        ]
+      }
+    },
+    {
+      "tag": "ss-gb",
+      "type": "shadowsocks",
+      "server": "uk1.example.com",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "FiQpJ3Ud%mShc&05",
+      "plugin": "v2ray-plugin",
+      "plugin_opts": "server;tls;host=uk1.example.com"
+    },
+    {
+      "tag": "vmess-jp",
+      "type": "vmess",
+      "server": "jp1.example.com",
+      "server_port": 10086,
+      "uuid": "7188cd27-961f-4a26-a3d8-938bcd11cd0b",
+      "security": "auto",
+      "alter_id": 0,
+      "global_padding": false,
+      "authenticated_length": true,
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "jp1.example.com"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "jp1.example.com",
+        "alpn": [
+          "h2",
+          "http/1.1"
+        ]
+      }
+    },
+    {
+      "tag": "ss-jp",
+      "type": "shadowsocks",
+      "server": "jp1.example.com",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "0D4b2WAQK0s8rr$0",
+      "plugin": "v2ray-plugin",
+      "plugin_opts": "server;tls;host=jp1.example.com"
+    },
+    {
+      "tag": "direct",
+      "type": "direct"
+    },
+    {
+      "tag": "block",
+      "type": "block"
+    }
+  ],
+  "route": {
+    "geoip": {
+      "download_url": "https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
+      "download_detour": "direct"
+    },
+    "geosite": {
+      "download_url": "https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
+      "download_detour": "direct"
+    },
+    "rules": [
+      {
+        "protocol": "dns",
+        "outbound": "dns-out"
+      },
+      {
+        "geosite": "cn",
+        "geoip": "cn",
+        "outbound": "direct"
+      }
+    ],
+    "final": "vmess-us",
+    "auto_detect_interface": true
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "server": "server.example.com",
+  "server_port": 8388,
+  "password": "password-placeholder",
+  "method": "chacha20-ietf-poly1305",
+  "plugin": "v2ray-plugin",
+  "plugin_opts": "server;tls;host=server.example.com",
+  "remarks": "SS Template",
+  "timeout": 300
+}

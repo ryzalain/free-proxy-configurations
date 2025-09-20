@@ -102,4 +102,4 @@ def test_environment_variables():
 
 # The `if __name__ == "__main__"` block is removed because the standard way
 # to run tests is to execute the `pytest` command in your terminal from the
-- # project root.
+# project root.

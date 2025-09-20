@@ -4,15 +4,9 @@ Automatic Proxy Configuration Updater
 Fetches and validates proxy servers from multiple sources
 """
 
-import json
-import logging
-import os
-import time
-from datetime import datetime
 from typing import Dict, List
 
 import requests
-import schedule
 from proxy_generator import ProxyGenerator
 
 

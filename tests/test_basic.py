@@ -38,15 +38,16 @@ def test_python_version():
 )
 def test_project_structure(project_root: Path, expected_path: str):
     """Test that the project has the expected directories and files."""
-    assert (project_root / expected_path).exists(), f"{expected_path} not found"
+    full_path = project_root / expected_path
+    assert full_path.exists(), f"Path does not exist: {full_path}"
 
 
 def test_requirements_file_content(project_root: Path):
     """Test that requirements.txt exists and contains key packages."""
     requirements_file = project_root / "requirements.txt"
-    assert requirements_file.is_file()
+    assert requirements_file.is_file(), f"{requirements_file} is not a file."
 
-    content = requirements_file.read_text()
+    content = requirements_file.read_text(encoding="utf-8")
     assert "requests" in content
     assert "pyyaml" in content
 
@@ -62,7 +63,7 @@ def test_directory_creation(tmp_path: Path, dir_name: str):
     assert new_dir.is_dir()
 
 
-def test_proxy_generator_import(project_root: Path):
+def test_proxy_generator_import():
     """Test that the proxy_generator module can be imported."""
     # If the file doesn't exist or has syntax errors, pytest will fail
     # with a clear ImportError, which is what we want.
@@ -83,7 +84,7 @@ def test_json_template_validity(project_root: Path):
 
     for json_file in json_files:
         try:
-            json.loads(json_file.read_text())
+            json.loads(json_file.read_text(encoding="utf-8"))
         except json.JSONDecodeError as e:
             pytest.fail(f"Invalid JSON in {json_file.name}: {e}")
 
@@ -93,12 +94,20 @@ def test_environment_variables():
     test_var = "TEST_PROXY_CONFIG"
     test_value = "test_value_123"
 
-    os.environ[test_var] = test_value
-    assert os.getenv(test_var) == test_value
+    # Ensure the variable doesn't exist before the test
+    original_value = os.environ.pop(test_var, None)
 
-    # Clean up the environment variable after the test
-    del os.environ[test_var]
-    assert os.getenv(test_var) is None
+    try:
+        os.environ[test_var] = test_value
+        assert os.getenv(test_var) == test_value
+    finally:
+        # Clean up and restore the original state
+        if original_value is not None:
+            os.environ[test_var] = original_value
+        elif test_var in os.environ:
+            del os.environ[test_var]
+
+    assert os.getenv(test_var) is None or os.getenv(test_var) == original_value
 
 # The `if __name__ == "__main__"` block is removed because the standard way
 # to run tests is to execute the `pytest` command in your terminal from the

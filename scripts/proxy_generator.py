@@ -8,7 +8,6 @@ import random
 import string
 import uuid
 from typing import Dict, List
-from urllib.parse import quote
 
 
 class ProxyGenerator:

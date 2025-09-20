@@ -55,7 +55,9 @@ class ConfigValidator:
                 if "type" not in inbound:
                     self.errors.append(f"Inbound {i}: missing 'type' field")
                 if "listen_port" not in inbound:
-                    self.errors.append(f"Inbound {i}: missing 'listen_port' field")
+                    self.errors.append(
+                        f"Inbound {i}: missing 'listen_port' field"
+                    )
 
     def _validate_outbounds(self, outbounds: List[Dict[str, Any]]) -> None:
         """Validate the outbound configurations."""
@@ -84,7 +86,9 @@ class ConfigValidator:
         if outbound_type in validators:
             validators[outbound_type](index, outbound)
         elif outbound_type not in ["direct", "block", "dns"]:
-            self.warnings.append(f"Outbound {index}: unknown type '{outbound_type}'")
+            self.warnings.append(
+                f"Outbound {index}: unknown type '{outbound_type}'"
+            )
 
     def _require_fields(self, protocol: str, index: int, config: Dict[str, Any], fields: List[str]):
         """Helper to check for required fields in a config."""

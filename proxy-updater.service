@@ -1,0 +1,12 @@
+[Unit]
+Description=Free Proxy Configurations Auto-Updater
+After=network.target
+
+[Service]
+ExecStart=/openhands/micromamba/envs/openhands/bin/python /workspace/project/free-proxy-configurations/scripts/auto_updater.py
+WorkingDirectory=/workspace/project/free-proxy-configurations
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Setup Script for Free Proxy Configurations
 Automates the initial setup and configuration

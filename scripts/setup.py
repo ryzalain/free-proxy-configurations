@@ -495,3 +495,4 @@ class ProxySetup:
     def create_systemd_service(self) -> None:
         """Create systemd service file for auto-updater"""
         print("🔧 Creating systemd service...")
+        

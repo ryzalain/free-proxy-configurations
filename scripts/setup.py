@@ -34,11 +34,14 @@ class ProxySetup:
 
         print(f"\n📦 Installing missing packages: {', '.join(missing)}")
         try:
-            subprocess.check_call([sys.executable, "-m", "pip", "install", *missing])
+            subprocess.check_call(
+                [sys.executable, "-m", "pip", "install", *missing]
+            )
             print("✅ Dependencies installed successfully.")
             return True
         except subprocess.CalledProcessError:
-            print("❌ Failed to install dependencies. Please install them manually.")
+            print("❌ Failed to install dependencies. "
+                  "Please install them manually.")
             return False
 
     def _is_installed(self, package_name: str) -> bool:
@@ -60,7 +63,8 @@ class ProxySetup:
         ]
         for directory in dirs_to_create:
             directory.mkdir(exist_ok=True)
-            print(f"   ✅ Created or already exists: {directory.relative_to(self.project_root)}")
+            print(f"   ✅ Created or already exists: "
+                  f"{directory.relative_to(self.project_root)}")
 
     def generate_initial_configs(self) -> None:
         """Generate initial configuration files using the proxy_generator."""
@@ -90,7 +94,8 @@ class ProxySetup:
                 print(f"   ✅ Generated {filename}")
 
         except ImportError:
-            print(f"   ❌ Error: Could not import ProxyGenerator from {self.scripts_dir}.")
+            print(f"   ❌ Error: Could not import ProxyGenerator from "
+                  f"{self.scripts_dir}.")
         except Exception as e:
             print(f"   ❌ Failed to generate configurations: {e}")
         finally:
@@ -122,10 +127,11 @@ WantedBy=multi-user.target
         service_file = self.project_root / "proxy-updater.service"
         service_file.write_text(service_content, encoding="utf-8")
 
-        print(f"   ✅ Service file 'proxy-updater.service' created in project root.")
-        print(f"   💡 To install, run with sudo:")
+        print("   ✅ Service file 'proxy-updater.service' "
+              "created in project root.")
+        print("   💡 To install, run with sudo:")
         print(f"      sudo cp {service_file} /etc/systemd/system/")
-        print(f"      sudo systemctl enable --now proxy-updater.service")
+        print("      sudo systemctl enable --now proxy-updater.service")
 
 
 def main():

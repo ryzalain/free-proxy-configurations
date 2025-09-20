@@ -8,15 +8,9 @@ import base64
 import json
 import re
 import socket
-import ssl
 import urllib.parse
 import uuid
-from typing import Any, Dict, List, Tuple
-
-import jsonschema
-import requests
-import yaml
-from jsonschema import validate
+Dict, List
 
 
 class ConfigValidator:

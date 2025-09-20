@@ -1,107 +1,135 @@
 """
 Setup Script for Free Proxy Configurations
-Automates the initial setup and configuration
+Automates the initial setup and configuration of the project.
 """
 
 import json
+import platform
 import subprocess
 import sys
 from pathlib import Path
 
-# The argparse import was removed as it was unused.
 
 class ProxySetup:
+    """Handles the automated setup process for the project."""
+
     def __init__(self):
         self.project_root = Path(__file__).parent.parent
         self.config_dir = self.project_root / "configs"
         self.logs_dir = self.project_root / "logs"
+        self.scripts_dir = self.project_root / "scripts"
 
     def check_dependencies(self) -> bool:
-        """Check if required dependencies are installed."""
+        """Check for and install required Python packages."""
         print("🔍 Checking dependencies...")
-        required_packages = [
+        required = [
             "requests", "pyyaml", "jsonschema", "cryptography",
             "schedule", "python-dotenv", "jinja2", "click", "rich",
         ]
-        missing_packages = []
-        for package in required_packages:
-            try:
-                __import__(package.replace("-", "_"))
-                print(f"   ✅ {package}")
-            except ImportError:
-                print(f"   ❌ {package}")
-                missing_packages.append(package)
+        missing = [pkg for pkg in required if not self._is_installed(pkg)]
 
-        if missing_packages:
-            print(f"\n📦 Installing missing packages: {', '.join(missing_packages)}")
-            try:
-                subprocess.check_call(
-                    [sys.executable, "-m", "pip", "install"] + missing_packages
-                )
-                print("✅ All dependencies installed successfully.")
-                return True
-            except subprocess.CalledProcessError:
-                print("❌ Failed to install dependencies.")
-                return False
-        else:
+        if not missing:
             print("✅ All dependencies are already installed.")
             return True
 
+        print(f"\n📦 Installing missing packages: {', '.join(missing)}")
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", *missing])
+            print("✅ Dependencies installed successfully.")
+            return True
+        except subprocess.CalledProcessError:
+            print("❌ Failed to install dependencies. Please install them manually.")
+            return False
+
+    def _is_installed(self, package_name: str) -> bool:
+        """Check if a package is installed."""
+        try:
+            __import__(package_name.replace("-", "_"))
+            return True
+        except ImportError:
+            return False
+
     def create_directories(self) -> None:
-        """Create necessary directories."""
+        """Create necessary project directories."""
         print("📁 Creating directories...")
-        directories = [
+        dirs_to_create = [
             self.config_dir,
             self.logs_dir,
             self.project_root / "templates",
             self.project_root / "backups",
         ]
-        for directory in directories:
+        for directory in dirs_to_create:
             directory.mkdir(exist_ok=True)
-            print(f"   ✅ {directory}")
+            print(f"   ✅ Created or already exists: {directory.relative_to(self.project_root)}")
 
     def generate_initial_configs(self) -> None:
-        """Generate initial configuration files."""
+        """Generate initial configuration files using the proxy_generator."""
         print("⚙️  Generating initial configurations...")
+        # Temporarily add scripts directory to the path for local import
+        sys.path.insert(0, str(self.scripts_dir))
         try:
-            # Import and run the proxy generator
-            sys.path.append(str(self.project_root / "scripts"))
             from proxy_generator import ProxyGenerator
-
             generator = ProxyGenerator()
 
-            # Generate Sing-box config
-            singbox_config = generator.generate_singbox_config()
-            with open(self.config_dir / "singbox.json", "w") as f:
-                json.dump(singbox_config, f, indent=2)
-            print("   ✅ Sing-box configuration")
+            # A map of filenames to their generator functions for cleaner code
+            configs_to_generate = {
+                "singbox.json": generator.generate_singbox_config,
+                "universal.txt": generator.export_universal_subscription,
+                "shadowsocks.txt": generator.export_shadowsocks_subscription,
+                "v2ray.txt": generator.export_vmess_subscription,
+            }
 
-            # Generate subscription links
-            universal_sub = generator.export_universal_subscription()
-            with open(self.config_dir / "universal.txt", "w") as f:
-                f.write(universal_sub)
-            print("   ✅ Universal subscription")
+            for filename, func in configs_to_generate.items():
+                content = func()
+                out_path = self.config_dir / filename
+                with out_path.open("w", encoding="utf-8") as f:
+                    if isinstance(content, dict):
+                        json.dump(content, f, indent=2)
+                    else:
+                        f.write(content)
+                print(f"   ✅ Generated {filename}")
 
-            ss_sub = generator.export_shadowsocks_subscription()
-            with open(self.config_dir / "shadowsocks.txt", "w") as f:
-                f.write(ss_sub)
-            print("   ✅ Shadowsocks subscription")
-
-            vmess_sub = generator.export_vmess_subscription()
-            with open(self.config_dir / "v2ray.txt", "w") as f:
-                f.write(vmess_sub)
-            print("   ✅ V2ray subscription")
-
+        except ImportError:
+            print(f"   ❌ Error: Could not import ProxyGenerator from {self.scripts_dir}.")
         except Exception as e:
             print(f"   ❌ Failed to generate configurations: {e}")
+        finally:
+            # Clean up the path modification
+            if str(self.scripts_dir) in sys.path:
+                sys.path.remove(str(self.scripts_dir))
 
     def create_systemd_service(self) -> None:
-        """Create systemd service file for auto-updater."""
-        print("🔧 Creating systemd service...")
-        # Add the logic for creating the systemd service here.
+        """Generate a systemd service file for the auto-updater."""
+        print("🔧 Creating systemd service file...")
+        if platform.system() != "Linux":
+            print("   ⚠️  Skipping: Systemd is only available on Linux.")
+            return
 
-# Example of how to run the setup
-if __name__ == "__main__":
+        updater_script_path = self.scripts_dir / "auto_updater.py"
+        service_content = f"""[Unit]
+Description=Free Proxy Configurations Auto-Updater
+After=network.target
+
+[Service]
+ExecStart={sys.executable} {updater_script_path}
+WorkingDirectory={self.project_root}
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+"""
+        service_file = self.project_root / "proxy-updater.service"
+        service_file.write_text(service_content, encoding="utf-8")
+
+        print(f"   ✅ Service file 'proxy-updater.service' created in project root.")
+        print(f"   💡 To install, run with sudo:")
+        print(f"      sudo cp {service_file} /etc/systemd/system/")
+        print(f"      sudo systemctl enable --now proxy-updater.service")
+
+
+def main():
+    """Run the complete setup process."""
     setup = ProxySetup()
     if setup.check_dependencies():
         setup.create_directories()
@@ -109,3 +137,6 @@ if __name__ == "__main__":
         setup.create_systemd_service()
         print("\n🎉 Setup complete!")
 
+
+if __name__ == "__main__":
+    main()

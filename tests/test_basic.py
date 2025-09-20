@@ -1,4 +1,4 @@
-"""Basic tests to ensure the project structure and test framework are working correctly."""
+"""Basic tests to ensure the project structure and test framework."""
 
 import json
 import os

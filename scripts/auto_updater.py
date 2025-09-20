@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Automatic Proxy Configuration Updater
+Automatic Proxy Configuration Updater.
+
 Fetches and validates proxy servers from multiple sources.
 """
 
@@ -22,10 +23,10 @@ from proxy_generator import ProxyGenerator  # noqa: E402
 
 
 class ProxyUpdater:
-    """Fetches, deduplicates, and manages proxy server lists from various
-    sources."""
+    """Fetches, deduplicates, and manages proxy server lists."""
 
     def __init__(self):
+        """Initializes the ProxyUpdater."""
         self.logger = self._setup_logging()
         self.generator = ProxyGenerator()
         self.sources = self._load_sources()
@@ -48,26 +49,31 @@ class ProxyUpdater:
         return [
             {
                 "name": "Free Shadowsocks Configs",
-                "url": ("https://raw.githubusercontent.com/freefq/free/"
-                        "master/v2"),
+                "url": "https://raw.githubusercontent.com/freefq/free/master/v2",
                 "type": "subscription",
             },
             {
                 "name": "Proxy Pool",
-                "url": ("https://raw.githubusercontent.com/mahdibland/"
-                        "V2RayAggregator/master/sub/sub_merge.txt"),
+                "url": (
+                    "https://raw.githubusercontent.com/mahdibland/"
+                    "V2RayAggregator/master/sub/sub_merge.txt"
+                ),
                 "type": "subscription",
             },
             {
                 "name": "Free V2ray Configs",
-                "url": ("https://raw.githubusercontent.com/peasoft/"
-                        "NoMoreWalls/master/list.txt"),
+                "url": (
+                    "https://raw.githubusercontent.com/peasoft/"
+                    "NoMoreWalls/master/list.txt"
+                ),
                 "type": "subscription",
             },
             {
                 "name": "Clash Configs",
-                "url": ("https://raw.githubusercontent.com/Pawdroid/"
-                        "Free-servers/main/sub"),
+                "url": (
+                    "https://raw.githubusercontent.com/Pawdroid/"
+                    "Free-servers/main/sub"
+                ),
                 "type": "subscription",
             },
         ]
@@ -104,26 +110,11 @@ class ProxyUpdater:
         )
         return unique_servers
 
-    def _fetch_from_api(self, source: Dict) -> List[Dict]:
-        """Fetch servers from a standard API source."""
-        response = requests.get(
-            source["url"], params=source.get("params", {}), timeout=30
-        )
-        response.raise_for_status()
-        return self._parse_proxy_list(response.text, source["name"])
-
-    def _fetch_from_raw(self, source: Dict) -> List[Dict]:
-        """Fetch servers from a raw text file source."""
-        response = requests.get(source["url"], timeout=30)
-        response.raise_for_status()
-        return self._parse_proxy_list(response.text, source["name"])
-
     def _fetch_from_subscription(self, source: Dict) -> List[Dict]:
         """Fetch servers from subscription-based sources."""
         response = requests.get(source["url"], timeout=30)
         response.raise_for_status()
 
-        # Try to decode base64 content
         try:
             decoded_content = base64.b64decode(response.text).decode('utf-8')
         except Exception:
@@ -138,14 +129,13 @@ class ProxyUpdater:
                 continue
 
             try:
+                server = None
                 if line.startswith('ss://'):
                     server = self._parse_shadowsocks_url(line)
                 elif line.startswith('vmess://'):
                     server = self._parse_vmess_url(line)
                 elif line.startswith('trojan://'):
                     server = self._parse_trojan_url(line)
-                else:
-                    continue
 
                 if server:
                     server['source'] = source['name']
@@ -160,11 +150,10 @@ class ProxyUpdater:
         return servers
 
     def _parse_shadowsocks_url(self, url: str) -> Dict:
-        """Parse Shadowsocks URL format"""
-        # Format: ss://base64(method:password)@server:port#name
+        """Parse Shadowsocks URL format."""
         match = re.match(r'ss://([^@]+)@([^:]+):(\d+)(?:#(.+))?', url)
         if not match:
-            return None
+            return {}
 
         auth_b64, host, port, name = match.groups()
         try:
@@ -180,16 +169,15 @@ class ProxyUpdater:
                 'name': unquote(name) if name else f"SS-{host}",
             }
         except Exception:
-            return None
+            return {}
 
     def _parse_vmess_url(self, url: str) -> Dict:
-        """Parse VMess URL format"""
-        # Format: vmess://base64(json_config)
+        """Parse VMess URL format."""
         if not url.startswith('vmess://'):
-            return None
+            return {}
 
         try:
-            config_b64 = url[8:]  # Remove 'vmess://'
+            config_b64 = url[8:]
             config_json = base64.b64decode(config_b64).decode('utf-8')
             config = json.loads(config_json)
 
@@ -207,14 +195,13 @@ class ProxyUpdater:
                 'name': config.get('ps', f"VMess-{config.get('add', '')}"),
             }
         except Exception:
-            return None
+            return {}
 
     def _parse_trojan_url(self, url: str) -> Dict:
-        """Parse Trojan URL format"""
-        # Format: trojan://password@server:port?params#name
+        """Parse Trojan URL format."""
         parsed = urlparse(url)
         if parsed.scheme != 'trojan':
-            return None
+            return {}
 
         return {
             'protocol': 'trojan',
@@ -225,39 +212,6 @@ class ProxyUpdater:
             'name': (unquote(parsed.fragment) if parsed.fragment
                      else f"Trojan-{parsed.hostname}"),
         }
-
-    def _fetch_from_telegram(self, source: Dict) -> List[Dict]:
-        """Fetch servers from Telegram channels (placeholder)."""
-        self.logger.warning(
-            "Telegram fetching is not implemented. "
-            "This requires a library like Telethon and API credentials."
-        )
-        return []
-
-    def _parse_proxy_list(self, text_content: str,
-                          source_name: str) -> List[Dict]:
-        """Parse a block of text containing host:port entries."""
-        servers = []
-        for line in text_content.strip().splitlines():
-            line = line.strip()
-            if ":" in line:
-                try:
-                    host, port_str = line.split(":", 1)
-                    # Handle potential extra text
-                    port = int(port_str.split()[0])
-                    servers.append(
-                        {
-                            "host": host,
-                            "port": port,
-                            "source": source_name,
-                        }
-                    )
-                except ValueError:
-                    self.logger.warning(
-                        f"Skipping malformed line from {source_name}: {line}"
-                    )
-                    continue
-        return servers
 
     def _deduplicate_servers(self, servers: List[Dict]) -> List[Dict]:
         """Remove duplicate servers based on host and port."""
@@ -277,10 +231,8 @@ class ProxyUpdater:
             self.logger.warning("No servers fetched. Exiting.")
             return
 
-        # Convert fetched servers to the format expected by ProxyGenerator
         converted_servers = self._convert_servers_format(servers)
 
-        # Update the generator with new servers and generate configs
         self.generator.update_servers(converted_servers)
         self.generator.generate_all_configs()
 
@@ -290,13 +242,10 @@ class ProxyUpdater:
         )
 
     def _convert_servers_format(self, servers: List[Dict]) -> List[Dict]:
-        """Convert fetched servers to ProxyGenerator format"""
-        converted = []
-
-        # Group servers by host to create the expected format
-        host_groups = {}
+        """Convert fetched servers to ProxyGenerator format."""
+        host_groups: Dict[str, Dict] = {}
         for server in servers:
-            host = server.get('host', '')
+            host = server.get('host')
             if not host:
                 continue
 
@@ -308,66 +257,44 @@ class ProxyUpdater:
                     'ports': {}
                 }
 
-            # Map protocol to port
-            protocol = server.get('protocol', '')
-            port = server.get('port', 0)
+            protocol = server.get('protocol')
+            port = server.get('port')
 
-            if protocol == 'shadowsocks':
-                host_groups[host]['ports']['shadowsocks'] = port
-            elif protocol == 'vmess':
-                host_groups[host]['ports']['vmess'] = port
-            elif protocol == 'trojan':
-                host_groups[host]['ports']['trojan'] = port
+            if protocol and port:
+                if protocol == 'shadowsocks':
+                    host_groups[host]['ports']['shadowsocks'] = port
+                elif protocol == 'vmess':
+                    host_groups[host]['ports']['vmess'] = port
+                elif protocol == 'trojan':
+                    host_groups[host]['ports']['trojan'] = port
 
-        # Convert to list and ensure all required ports exist
-        for host_data in host_groups.values():
-            # Ensure all protocols have ports (use defaults if missing)
-            if 'shadowsocks' not in host_data['ports']:
-                host_data['ports']['shadowsocks'] = 8388
-            if 'vmess' not in host_data['ports']:
-                host_data['ports']['vmess'] = 10086
-            if 'trojan' not in host_data['ports']:
-                host_data['ports']['trojan'] = 443
-
-            converted.append(host_data)
-
-        return converted[:10]  # Limit to 10 servers to avoid too many configs
+        converted = list(host_groups.values())
+        return converted[:10]  # Limit to 10 servers
 
     def _guess_country_from_host(self, host: str) -> str:
-        """Guess country from hostname"""
+        """Guess country from hostname."""
         host_lower = host.lower()
         if 'us' in host_lower or 'america' in host_lower:
             return 'US'
-        elif 'uk' in host_lower or 'britain' in host_lower:
+        if 'uk' in host_lower or 'britain' in host_lower:
             return 'GB'
-        elif 'jp' in host_lower or 'japan' in host_lower:
+        if 'jp' in host_lower or 'japan' in host_lower:
             return 'JP'
-        elif 'de' in host_lower or 'german' in host_lower:
-            return 'DE'
-        elif 'fr' in host_lower or 'france' in host_lower:
-            return 'FR'
-        elif 'sg' in host_lower or 'singapore' in host_lower:
-            return 'SG'
-        else:
-            return 'XX'  # Unknown
+        return 'XX'  # Unknown
 
     def _guess_city_from_host(self, host: str) -> str:
-        """Guess city from hostname"""
+        """Guess city from hostname."""
         host_lower = host.lower()
         if 'newyork' in host_lower or 'ny' in host_lower:
             return 'New York'
-        elif 'london' in host_lower:
+        if 'london' in host_lower:
             return 'London'
-        elif 'tokyo' in host_lower:
+        if 'tokyo' in host_lower:
             return 'Tokyo'
-        elif 'singapore' in host_lower:
-            return 'Singapore'
-        elif 'paris' in host_lower:
-            return 'Paris'
-        else:
-            return 'Unknown'
+        return 'Unknown'
 
 
 if __name__ == "__main__":
     updater = ProxyUpdater()
     updater.run()
+

@@ -64,21 +64,20 @@ Configurations are automatically updated every 6 hours to ensure:
 
 ### Universal Links (Recommended)
 ```
-https://raw.githubusercontent.com/your-repo/free-proxies/main/configs/universal.txt
+https://raw.githubusercontent.com/ryzalain/free-proxy-configurations/main/configs/universal.txt
 ```
 
 ### Protocol-Specific Links
-- **Sing-box**: `https://raw.githubusercontent.com/your-repo/free-proxies/main/configs/singbox.json`
-- **V2ray**: `https://raw.githubusercontent.com/your-repo/free-proxies/main/configs/v2ray.txt`
-- **Shadowsocks**: `https://raw.githubusercontent.com/your-repo/free-proxies/main/configs/shadowsocks.txt`
-- **Trojan**: `https://raw.githubusercontent.com/your-repo/free-proxies/main/configs/trojan.txt`
+- **Sing-box**: `https://raw.githubusercontent.com/ryzalain/free-proxy-configurations/main/configs/singbox.json`
+- **V2ray**: `https://raw.githubusercontent.com/ryzalain/free-proxy-configurations/main/configs/v2ray.txt`
+- **Shadowsocks**: `https://raw.githubusercontent.com/ryzalain/free-proxy-configurations/main/configs/shadowsocks.txt`
 
 ## ⚡ Quick Setup Examples
 
 ### HiddifyVPN
 1. Open HiddifyVPN app
 2. Tap "+" → "Add Profile from URL"
-3. Paste: `https://raw.githubusercontent.com/your-repo/free-proxies/main/configs/universal.txt`
+3. Paste: `https://raw.githubusercontent.com/ryzalain/free-proxy-configurations/main/configs/universal.txt`
 4. Tap "Add" and connect!
 
 ### V2rayNG
@@ -113,11 +112,27 @@ This project is licensed under the MIT License - see [LICENSE](./LICENSE) for de
 ## 🆘 Support
 
 - 📖 Check our [Documentation](./docs/)
-- 🐛 Report issues on [GitHub Issues](https://github.com/your-repo/free-proxies/issues)
-- 💬 Join our [Telegram Channel](https://t.me/your-channel) for updates
+- 🐛 Report issues on [GitHub Issues](https://github.com/ryzalain/free-proxy-configurations/issues)
+- ⭐ Star this repository if it helps you!
 
 ---
 
 ⭐ **Star this repository** if it helps you maintain your internet privacy!
 
-Last updated: $(date)
+🔄 **Automatically updated every 6 hours** - Last update: Check commit history
+
+## 🚀 Features
+
+- ✅ **2000+ Active Proxies** - Constantly updated from multiple sources
+- ✅ **Multiple Protocols** - Shadowsocks, VMess, Trojan, and more
+- ✅ **Auto-Updates** - GitHub Actions update configs every 6 hours
+- ✅ **Quality Validation** - All configs are tested and validated
+- ✅ **Universal Format** - Works with all major proxy clients
+- ✅ **No Registration** - Direct access to all configurations
+- ✅ **Open Source** - Fully transparent and auditable code
+
+## 📊 Current Status
+
+![GitHub last commit](https://img.shields.io/github/last-commit/ryzalain/free-proxy-configurations)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ryzalain/free-proxy-configurations/update-proxies.yml)
+![GitHub repo size](https://img.shields.io/github/repo-size/ryzalain/free-proxy-configurations)

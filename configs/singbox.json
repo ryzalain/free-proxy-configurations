@@ -1,178 +1,322 @@
 {
   "log": {
-    "level": "info",
-    "timestamp": true
-  },
-  "dns": {
-    "servers": [
-      {
-        "tag": "cloudflare",
-        "address": "https://1.1.1.1/dns-query",
-        "detour": "direct"
-      },
-      {
-        "tag": "local",
-        "address": "local",
-        "detour": "direct"
-      }
-    ],
-    "rules": [
-      {
-        "geosite": "cn",
-        "server": "local"
-      }
-    ],
-    "final": "cloudflare",
-    "strategy": "ipv4_only"
+    "level": "info"
   },
   "inbounds": [
     {
       "type": "mixed",
       "listen": "127.0.0.1",
-      "listen_port": 1080,
-      "sniff": true,
-      "sniff_override_destination": true
+      "listen_port": 7890
     }
   ],
   "outbounds": [
     {
-      "tag": "vmess-us",
+      "type": "selector",
+      "tag": "proxy",
+      "outbounds": [
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-US-Unknown",
+        "vmess-US-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-GB-Unknown",
+        "vmess-GB-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-DE-Unknown",
+        "vmess-DE-Unknown"
+      ]
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-XX-Unknown",
+      "server": "\u4f7f\u7528\u524d\u8bb0\u5f97\u66f4\u65b0\u8ba2\u9605",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "B6bUjED2MmIYn0zk"
+    },
+    {
       "type": "vmess",
-      "server": "us1.example.com",
-      "server_port": 10086,
-      "uuid": "cc663a9b-480b-4e15-8b65-9f87b5ae82b4",
+      "tag": "vmess-XX-Unknown",
+      "server": "\u4f7f\u7528\u524d\u8bb0\u5f97\u66f4\u65b0\u8ba2\u9605",
+      "server_port": 0,
+      "uuid": "ccf22d8a-0907-4cba-adb0-ae6fe08c4f97",
       "security": "auto",
-      "alter_id": 0,
-      "global_padding": false,
-      "authenticated_length": true,
       "transport": {
         "type": "ws",
         "path": "/vmess",
         "headers": {
-          "Host": "us1.example.com"
+          "Host": "\u4f7f\u7528\u524d\u8bb0\u5f97\u66f4\u65b0\u8ba2\u9605"
         }
       },
       "tls": {
         "enabled": true,
-        "server_name": "us1.example.com",
-        "alpn": [
-          "h2",
-          "http/1.1"
-        ]
+        "server_name": "\u4f7f\u7528\u524d\u8bb0\u5f97\u66f4\u65b0\u8ba2\u9605"
       }
     },
     {
-      "tag": "ss-us",
       "type": "shadowsocks",
-      "server": "us1.example.com",
+      "tag": "ss-XX-Unknown",
+      "server": "202.78.162.5",
       "server_port": 8388,
       "method": "chacha20-ietf-poly1305",
-      "password": "4pnB2A!y7Kdiq7MG",
-      "plugin": "v2ray-plugin",
-      "plugin_opts": "server;tls;host=us1.example.com"
+      "password": "ALezrZ3nZbNpTP17"
     },
     {
-      "tag": "vmess-gb",
       "type": "vmess",
-      "server": "uk1.example.com",
-      "server_port": 10086,
-      "uuid": "5c1f0ef2-6e42-40ec-be30-51fd48a5f5bd",
+      "tag": "vmess-XX-Unknown",
+      "server": "202.78.162.5",
+      "server_port": 443,
+      "uuid": "33214d72-4241-4c38-a17f-02fbef85f853",
       "security": "auto",
-      "alter_id": 0,
-      "global_padding": false,
-      "authenticated_length": true,
       "transport": {
         "type": "ws",
         "path": "/vmess",
         "headers": {
-          "Host": "uk1.example.com"
+          "Host": "202.78.162.5"
         }
       },
       "tls": {
         "enabled": true,
-        "server_name": "uk1.example.com",
-        "alpn": [
-          "h2",
-          "http/1.1"
-        ]
+        "server_name": "202.78.162.5"
       }
     },
     {
-      "tag": "ss-gb",
       "type": "shadowsocks",
-      "server": "uk1.example.com",
+      "tag": "ss-XX-Unknown",
+      "server": "www.darkroom.lol",
       "server_port": 8388,
       "method": "chacha20-ietf-poly1305",
-      "password": "FiQpJ3Ud%mShc&05",
-      "plugin": "v2ray-plugin",
-      "plugin_opts": "server;tls;host=uk1.example.com"
+      "password": "h2kX35u3ZhiHfvi5"
     },
     {
-      "tag": "vmess-jp",
       "type": "vmess",
-      "server": "jp1.example.com",
-      "server_port": 10086,
-      "uuid": "7188cd27-961f-4a26-a3d8-938bcd11cd0b",
+      "tag": "vmess-XX-Unknown",
+      "server": "www.darkroom.lol",
+      "server_port": 8080,
+      "uuid": "04faa86b-a39a-4f3e-9e53-d52884a05ed4",
       "security": "auto",
-      "alter_id": 0,
-      "global_padding": false,
-      "authenticated_length": true,
       "transport": {
         "type": "ws",
         "path": "/vmess",
         "headers": {
-          "Host": "jp1.example.com"
+          "Host": "www.darkroom.lol"
         }
       },
       "tls": {
         "enabled": true,
-        "server_name": "jp1.example.com",
-        "alpn": [
-          "h2",
-          "http/1.1"
-        ]
+        "server_name": "www.darkroom.lol"
       }
     },
     {
-      "tag": "ss-jp",
       "type": "shadowsocks",
-      "server": "jp1.example.com",
+      "tag": "ss-XX-Unknown",
+      "server": "server31.beheshtbaneh.com",
       "server_port": 8388,
       "method": "chacha20-ietf-poly1305",
-      "password": "0D4b2WAQK0s8rr$0",
-      "plugin": "v2ray-plugin",
-      "plugin_opts": "server;tls;host=jp1.example.com"
+      "password": "a43KUqBegBipnXhH"
     },
     {
-      "tag": "direct",
-      "type": "direct"
+      "type": "vmess",
+      "tag": "vmess-XX-Unknown",
+      "server": "server31.beheshtbaneh.com",
+      "server_port": 8880,
+      "uuid": "3b03886f-402f-443c-b5ee-d7ca1244fea9",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "server31.beheshtbaneh.com"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "server31.beheshtbaneh.com"
+      }
     },
     {
-      "tag": "block",
-      "type": "block"
+      "type": "shadowsocks",
+      "tag": "ss-US-Unknown",
+      "server": "data-us-v1.shwjfkw.cn",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "d9RvoAnBqFPLvxqB"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-US-Unknown",
+      "server": "data-us-v1.shwjfkw.cn",
+      "server_port": 20401,
+      "uuid": "fc961c81-c6c7-440c-98bd-6169260d3cfc",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "data-us-v1.shwjfkw.cn"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "data-us-v1.shwjfkw.cn"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-XX-Unknown",
+      "server": "104.21.82.183",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "LTu9dvy8HFp7Af2k"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-XX-Unknown",
+      "server": "104.21.82.183",
+      "server_port": 8880,
+      "uuid": "23cbbabb-d88c-4c78-9aeb-11b4aa01dc0a",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "104.21.82.183"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "104.21.82.183"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-GB-Unknown",
+      "server": "gov.uk",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "hmMoWtCnQMCZlc95"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-GB-Unknown",
+      "server": "gov.uk",
+      "server_port": 443,
+      "uuid": "2fd3201b-b11a-4b6a-b55c-adf32c4f3eff",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "gov.uk"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "gov.uk"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-XX-Unknown",
+      "server": "server32.beheshtbaneh.com",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "huaAdfBB4vNV0Alz"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-XX-Unknown",
+      "server": "server32.beheshtbaneh.com",
+      "server_port": 8880,
+      "uuid": "0c396f48-383e-4cf1-b5e4-cbae1a5ac97c",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "server32.beheshtbaneh.com"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "server32.beheshtbaneh.com"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-XX-Unknown",
+      "server": "23.162.200.227",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "yo8aYmKMu5GxGgES"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-XX-Unknown",
+      "server": "23.162.200.227",
+      "server_port": 443,
+      "uuid": "1d71b546-6cfe-4e97-be9d-1f94a06ab292",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "23.162.200.227"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "23.162.200.227"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-DE-Unknown",
+      "server": "masjide.org",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "D5b5Vn9ccbCbEEde"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-DE-Unknown",
+      "server": "masjide.org",
+      "server_port": 443,
+      "uuid": "1caad67e-9777-49a9-b887-a00b025a328d",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "masjide.org"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "masjide.org"
+      }
     }
   ],
   "route": {
-    "geoip": {
-      "download_url": "https://github.com/SagerNet/sing-geoip/releases/latest/download/geoip.db",
-      "download_detour": "direct"
-    },
-    "geosite": {
-      "download_url": "https://github.com/SagerNet/sing-geosite/releases/latest/download/geosite.db",
-      "download_detour": "direct"
-    },
     "rules": [
       {
-        "protocol": "dns",
-        "outbound": "dns-out"
-      },
-      {
-        "geosite": "cn",
-        "geoip": "cn",
+        "geosite": "private",
         "outbound": "direct"
       }
-    ],
-    "final": "vmess-us",
-    "auto_detect_interface": true
+    ]
   }
 }

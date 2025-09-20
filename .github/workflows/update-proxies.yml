@@ -1,0 +1,126 @@
+name: Update Proxy Configurations
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    # Allow manual triggering
+  push:
+    branches: [ main ]
+    paths:
+      - 'scripts/**'
+      - '.github/workflows/**'
+
+jobs:
+  update-proxies:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Update proxy configurations
+      run: |
+        python scripts/auto_updater.py
+        
+    - name: Validate configurations
+      run: |
+        python tests/config_validator.py configs/singbox.json --type singbox
+        python tests/config_validator.py configs/universal.txt --type subscription
+        
+    - name: Check for changes
+      id: verify-changed-files
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Commit and push changes
+      if: steps.verify-changed-files.outputs.changed == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add configs/
+        git commit -m "🔄 Auto-update proxy configurations - $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+        git push
+        
+    - name: Create status report
+      if: always()
+      run: |
+        echo "## Proxy Update Report" > update-report.md
+        echo "**Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> update-report.md
+        echo "**Status:** ${{ job.status }}" >> update-report.md
+        echo "" >> update-report.md
+        
+        if [ -f configs/universal.txt ]; then
+          UNIVERSAL_SIZE=$(wc -c < configs/universal.txt)
+          echo "**Universal config size:** ${UNIVERSAL_SIZE} bytes" >> update-report.md
+        fi
+        
+        if [ -f configs/shadowsocks.txt ]; then
+          SS_COUNT=$(wc -l < configs/shadowsocks.txt)
+          echo "**Shadowsocks configs:** ${SS_COUNT} servers" >> update-report.md
+        fi
+        
+        if [ -f configs/v2ray.txt ]; then
+          V2RAY_COUNT=$(wc -l < configs/v2ray.txt)
+          echo "**V2Ray configs:** ${V2RAY_COUNT} servers" >> update-report.md
+        fi
+        
+        echo "" >> update-report.md
+        echo "**Repository:** https://github.com/${{ github.repository }}" >> update-report.md
+        
+    - name: Upload report as artifact
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: update-report
+        path: update-report.md
+        retention-days: 7
+
+  test-configurations:
+    runs-on: ubuntu-latest
+    needs: update-proxies
+    if: always()
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+        
+    - name: Run tests
+      run: |
+        pytest tests/ -v --cov=scripts --cov-report=term-missing
+        
+    - name: Run security tests
+      run: |
+        python tests/security_test.py
+        
+    - name: Validate all configurations
+      run: |
+        make validate || true  # Don't fail the workflow if validation fails

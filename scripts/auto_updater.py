@@ -5,10 +5,14 @@ Fetches and validates proxy servers from multiple sources.
 """
 
 import logging
+import sys
 from pathlib import Path
 from typing import Dict, List
 
 import requests
+
+# Add the scripts directory to the path for local imports
+sys.path.insert(0, str(Path(__file__).parent))
 from proxy_generator import ProxyGenerator
 
 
@@ -35,23 +39,26 @@ class ProxyUpdater:
 
     def _load_sources(self) -> List[Dict]:
         """Load the configuration for proxy sources."""
-        # In a real-world application, this might be loaded from a YAML or JSON file.
         return [
             {
-                "name": "ProxyScrape API",
-                "url": "https://api.proxyscrape.com/v2/",
-                "params": {"request": "displayproxies"},
-                "type": "api",
+                "name": "Free Shadowsocks Configs",
+                "url": "https://raw.githubusercontent.com/freefq/free/master/v2",
+                "type": "subscription",
             },
             {
-                "name": "GitHub Free Proxies",
-                "url": "https://raw.githubusercontent.com/TheSpeedX/SOCKS-List/master/http.txt",
-                "type": "raw",
+                "name": "Proxy Pool",
+                "url": "https://raw.githubusercontent.com/mahdibland/V2RayAggregator/master/sub/sub_merge.txt",
+                "type": "subscription",
             },
             {
-                "name": "Telegram Channels",
-                "channels": ["@example_proxy_channel"],
-                "type": "telegram",
+                "name": "Free V2ray Configs",
+                "url": "https://raw.githubusercontent.com/peasoft/NoMoreWalls/master/list.txt",
+                "type": "subscription",
+            },
+            {
+                "name": "Clash Configs",
+                "url": "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub",
+                "type": "subscription",
             },
         ]
 
@@ -97,17 +104,128 @@ class ProxyUpdater:
         response.raise_for_status()
         return self._parse_proxy_list(response.text, source["name"])
 
+    def _fetch_from_subscription(self, source: Dict) -> List[Dict]:
+        """Fetch servers from subscription-based sources."""
+        import base64
+        import re
+        
+        response = requests.get(source["url"], timeout=30)
+        response.raise_for_status()
+        
+        # Try to decode base64 content
+        try:
+            decoded_content = base64.b64decode(response.text).decode('utf-8')
+        except:
+            decoded_content = response.text
+        
+        servers = []
+        lines = decoded_content.strip().split('\n')
+        
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+                
+            try:
+                if line.startswith('ss://'):
+                    server = self._parse_shadowsocks_url(line)
+                elif line.startswith('vmess://'):
+                    server = self._parse_vmess_url(line)
+                elif line.startswith('trojan://'):
+                    server = self._parse_trojan_url(line)
+                else:
+                    continue
+                    
+                if server:
+                    server['source'] = source['name']
+                    servers.append(server)
+                    
+            except Exception as e:
+                self.logger.debug(f"Failed to parse line: {line[:50]}... Error: {e}")
+                continue
+        
+        return servers
+
+    def _parse_shadowsocks_url(self, url: str) -> Dict:
+        """Parse Shadowsocks URL format"""
+        import base64
+        from urllib.parse import unquote
+        
+        # Format: ss://base64(method:password)@server:port#name
+        match = re.match(r'ss://([^@]+)@([^:]+):(\d+)(?:#(.+))?', url)
+        if not match:
+            return None
+            
+        auth_b64, host, port, name = match.groups()
+        try:
+            auth_decoded = base64.b64decode(auth_b64).decode('utf-8')
+            method, password = auth_decoded.split(':', 1)
+            
+            return {
+                'protocol': 'shadowsocks',
+                'host': host,
+                'port': int(port),
+                'method': method,
+                'password': password,
+                'name': unquote(name) if name else f"SS-{host}",
+            }
+        except:
+            return None
+
+    def _parse_vmess_url(self, url: str) -> Dict:
+        """Parse VMess URL format"""
+        import base64
+        import json
+        
+        # Format: vmess://base64(json_config)
+        if not url.startswith('vmess://'):
+            return None
+            
+        try:
+            config_b64 = url[8:]  # Remove 'vmess://'
+            config_json = base64.b64decode(config_b64).decode('utf-8')
+            config = json.loads(config_json)
+            
+            return {
+                'protocol': 'vmess',
+                'host': config.get('add', ''),
+                'port': int(config.get('port', 0)),
+                'uuid': config.get('id', ''),
+                'alterId': int(config.get('aid', 0)),
+                'security': config.get('scy', 'auto'),
+                'network': config.get('net', 'tcp'),
+                'path': config.get('path', '/'),
+                'host_header': config.get('host', ''),
+                'tls': config.get('tls', '') == 'tls',
+                'name': config.get('ps', f"VMess-{config.get('add', '')}"),
+            }
+        except:
+            return None
+
+    def _parse_trojan_url(self, url: str) -> Dict:
+        """Parse Trojan URL format"""
+        from urllib.parse import unquote, parse_qs, urlparse
+        
+        # Format: trojan://password@server:port?params#name
+        parsed = urlparse(url)
+        if parsed.scheme != 'trojan':
+            return None
+            
+        return {
+            'protocol': 'trojan',
+            'host': parsed.hostname,
+            'port': parsed.port or 443,
+            'password': parsed.username,
+            'sni': parse_qs(parsed.query).get('sni', [parsed.hostname])[0],
+            'name': unquote(parsed.fragment) if parsed.fragment else f"Trojan-{parsed.hostname}",
+        }
+
     def _fetch_from_telegram(self, source: Dict) -> List[Dict]:
         """Fetch servers from Telegram channels (placeholder)."""
         self.logger.warning(
             "Telegram fetching is not implemented. "
             "This requires a library like Telethon and API credentials."
         )
-        # In a real implementation, you would use a Telegram client library here.
-        # For example:
-        # from telethon.sync import TelegramClient
-        # client = TelegramClient('session_name', api_id, api_hash)
-        # ... fetch messages from source['channels'] ...
         return []
 
     def _parse_proxy_list(self, text_content: str, source_name: str) -> List[Dict]:
@@ -149,11 +267,92 @@ class ProxyUpdater:
             self.logger.warning("No servers fetched. Exiting.")
             return
 
-        # Here you would use the generator to process the server list
-        # For example:
-        # self.generator.update_servers(servers)
-        # self.generator.generate_all_configs()
-        self.logger.info("Proxy update process finished.")
+        # Convert fetched servers to the format expected by ProxyGenerator
+        converted_servers = self._convert_servers_format(servers)
+        
+        # Update the generator with new servers and generate configs
+        self.generator.update_servers(converted_servers)
+        self.generator.generate_all_configs()
+        
+        self.logger.info(f"Proxy update process finished. Generated configs for {len(converted_servers)} servers.")
+
+    def _convert_servers_format(self, servers: List[Dict]) -> List[Dict]:
+        """Convert fetched servers to ProxyGenerator format"""
+        converted = []
+        
+        # Group servers by host to create the expected format
+        host_groups = {}
+        for server in servers:
+            host = server.get('host', '')
+            if not host:
+                continue
+                
+            if host not in host_groups:
+                host_groups[host] = {
+                    'host': host,
+                    'country': self._guess_country_from_host(host),
+                    'city': self._guess_city_from_host(host),
+                    'ports': {}
+                }
+            
+            # Map protocol to port
+            protocol = server.get('protocol', '')
+            port = server.get('port', 0)
+            
+            if protocol == 'shadowsocks':
+                host_groups[host]['ports']['shadowsocks'] = port
+            elif protocol == 'vmess':
+                host_groups[host]['ports']['vmess'] = port
+            elif protocol == 'trojan':
+                host_groups[host]['ports']['trojan'] = port
+        
+        # Convert to list and ensure all required ports exist
+        for host_data in host_groups.values():
+            # Ensure all protocols have ports (use defaults if missing)
+            if 'shadowsocks' not in host_data['ports']:
+                host_data['ports']['shadowsocks'] = 8388
+            if 'vmess' not in host_data['ports']:
+                host_data['ports']['vmess'] = 10086
+            if 'trojan' not in host_data['ports']:
+                host_data['ports']['trojan'] = 443
+                
+            converted.append(host_data)
+        
+        return converted[:10]  # Limit to 10 servers to avoid too many configs
+
+    def _guess_country_from_host(self, host: str) -> str:
+        """Guess country from hostname"""
+        host_lower = host.lower()
+        if 'us' in host_lower or 'america' in host_lower:
+            return 'US'
+        elif 'uk' in host_lower or 'britain' in host_lower:
+            return 'GB'
+        elif 'jp' in host_lower or 'japan' in host_lower:
+            return 'JP'
+        elif 'de' in host_lower or 'german' in host_lower:
+            return 'DE'
+        elif 'fr' in host_lower or 'france' in host_lower:
+            return 'FR'
+        elif 'sg' in host_lower or 'singapore' in host_lower:
+            return 'SG'
+        else:
+            return 'XX'  # Unknown
+
+    def _guess_city_from_host(self, host: str) -> str:
+        """Guess city from hostname"""
+        host_lower = host.lower()
+        if 'newyork' in host_lower or 'ny' in host_lower:
+            return 'New York'
+        elif 'london' in host_lower:
+            return 'London'
+        elif 'tokyo' in host_lower:
+            return 'Tokyo'
+        elif 'singapore' in host_lower:
+            return 'Singapore'
+        elif 'paris' in host_lower:
+            return 'Paris'
+        else:
+            return 'Unknown'
 
 
 if __name__ == "__main__":

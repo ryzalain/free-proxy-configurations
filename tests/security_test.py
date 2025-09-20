@@ -106,5 +106,11 @@ class SecurityTester:
             response = requests.get("https://ipv6.icanhazip.com", proxies=self.proxy_config, timeout=self.timeout)
             if response.ok and response.text.strip():
                 print(f"   └── ⚠️ IPv6 connection detected: {response.text.strip()}")
-                return
+                return False
+            else:
+                print("   └── ✅ No IPv6 leak detected")
+                return True
+        except requests.RequestException:
+            print("   └── ✅ IPv6 connection blocked (good)")
+            return True
 

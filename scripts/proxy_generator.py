@@ -219,7 +219,7 @@ class ProxyGenerator:
         return '\n'.join(configs)
 
     def export_universal_subscription(self) -> str:
-        """Export universal subscription containing all protocols"""
+        """Export universal subscription containing all protocols in plain text"""
         all_configs = []
 
         # Add Shadowsocks configs
@@ -234,8 +234,12 @@ class ProxyGenerator:
         trojan_configs = self.export_trojan_subscription().split('\n')
         all_configs.extend(trojan_configs)
 
-        # Base64 encode the entire subscription
-        subscription_content = '\n'.join(all_configs)
+        # Return plain text subscription
+        return '\n'.join(all_configs)
+
+    def export_universal_subscription_base64(self) -> str:
+        """Export universal subscription containing all protocols in base64 format"""
+        subscription_content = self.export_universal_subscription()
         return base64.b64encode(subscription_content.encode()).decode()
 
     def update_servers(self, new_servers: List[Dict]) -> None:
@@ -263,6 +267,9 @@ class ProxyGenerator:
 
         with open(config_dir / "universal.txt", "w") as f:
             f.write(self.export_universal_subscription())
+
+        with open(config_dir / "universal-base64.txt", "w") as f:
+            f.write(self.export_universal_subscription_base64())
 
 
 def main():

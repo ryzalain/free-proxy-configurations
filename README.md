@@ -63,14 +63,15 @@ Configurations are automatically updated every 6 hours to ensure:
 ## 📱 Subscription Links
 
 ### Universal Links (Recommended)
-```
-https://raw.githubusercontent.com/ryzalain/free-proxy-configurations/main/configs/universal.txt
-```
+- **Plain Text Format**: `https://raw.githubusercontent.com/ryzalain/free-proxy-configurations/main/configs/universal.txt`
+- **Base64 Encoded**: `https://raw.githubusercontent.com/ryzalain/free-proxy-configurations/main/configs/universal-base64.txt`
 
 ### Protocol-Specific Links
 - **Sing-box**: `https://raw.githubusercontent.com/ryzalain/free-proxy-configurations/main/configs/singbox.json`
 - **V2ray**: `https://raw.githubusercontent.com/ryzalain/free-proxy-configurations/main/configs/v2ray.txt`
 - **Shadowsocks**: `https://raw.githubusercontent.com/ryzalain/free-proxy-configurations/main/configs/shadowsocks.txt`
+
+> **Note**: Most modern clients support the plain text format. Use the base64 encoded version only if your client specifically requires it.
 
 ## ⚡ Quick Setup Examples
 

@@ -14,12 +14,26 @@
       "type": "selector",
       "tag": "proxy",
       "outbounds": [
-        "ss-US-New York",
-        "vmess-US-New York",
-        "ss-GB-London",
-        "vmess-GB-London",
-        "ss-JP-Tokyo",
-        "vmess-JP-Tokyo"
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-US-Unknown",
+        "vmess-US-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-GB-Unknown",
+        "vmess-GB-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown",
+        "ss-XX-Unknown",
+        "vmess-XX-Unknown"
       ]
     },
     {
@@ -28,83 +42,272 @@
     },
     {
       "type": "shadowsocks",
-      "tag": "ss-US-New York",
-      "server": "free-ss.site",
+      "tag": "ss-XX-Unknown",
+      "server": "\u4f7f\u7528\u524d\u8bb0\u5f97\u66f4\u65b0\u8ba2\u9605",
       "server_port": 8388,
       "method": "chacha20-ietf-poly1305",
-      "password": "IyWwavCNJz4VNOjW"
+      "password": "DDmisurixH3SV2SE"
     },
     {
       "type": "vmess",
-      "tag": "vmess-US-New York",
-      "server": "free-ss.site",
+      "tag": "vmess-XX-Unknown",
+      "server": "\u4f7f\u7528\u524d\u8bb0\u5f97\u66f4\u65b0\u8ba2\u9605",
+      "server_port": 0,
+      "uuid": "c89f7805-096e-46d5-9f63-04b37788928e",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "\u4f7f\u7528\u524d\u8bb0\u5f97\u66f4\u65b0\u8ba2\u9605"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "\u4f7f\u7528\u524d\u8bb0\u5f97\u66f4\u65b0\u8ba2\u9605"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-XX-Unknown",
+      "server": "185.242.86.156",
+      "server_port": 54170,
+      "method": "chacha20-ietf-poly1305",
+      "password": "FfNoIq9tTGjJ98oF"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-XX-Unknown",
+      "server": "185.242.86.156",
       "server_port": 10086,
-      "uuid": "582f9c2d-c177-43d2-ba16-a9e4e6e24ff7",
+      "uuid": "4b426e4d-1db7-4f78-ac46-71c80f6849df",
       "security": "auto",
       "transport": {
         "type": "ws",
         "path": "/vmess",
         "headers": {
-          "Host": "free-ss.site"
+          "Host": "185.242.86.156"
         }
       },
       "tls": {
         "enabled": true,
-        "server_name": "free-ss.site"
+        "server_name": "185.242.86.156"
       }
     },
     {
       "type": "shadowsocks",
-      "tag": "ss-GB-London",
-      "server": "free-ss.site",
-      "server_port": 8389,
+      "tag": "ss-XX-Unknown",
+      "server": "202.78.162.5",
+      "server_port": 8388,
       "method": "chacha20-ietf-poly1305",
-      "password": "hLxW2jdsBeGmjPnb"
+      "password": "5M4zBbxFnVOwoVIY"
     },
     {
       "type": "vmess",
-      "tag": "vmess-GB-London",
-      "server": "free-ss.site",
-      "server_port": 10087,
-      "uuid": "452d0f41-55a5-4d66-ba10-12bd98f3492f",
+      "tag": "vmess-XX-Unknown",
+      "server": "202.78.162.5",
+      "server_port": 443,
+      "uuid": "85b5a041-6888-45f1-9e69-5690e8177518",
       "security": "auto",
       "transport": {
         "type": "ws",
         "path": "/vmess",
         "headers": {
-          "Host": "free-ss.site"
+          "Host": "202.78.162.5"
         }
       },
       "tls": {
         "enabled": true,
-        "server_name": "free-ss.site"
+        "server_name": "202.78.162.5"
       }
     },
     {
       "type": "shadowsocks",
-      "tag": "ss-JP-Tokyo",
-      "server": "free-ss.site",
-      "server_port": 8390,
+      "tag": "ss-XX-Unknown",
+      "server": "www.darkroom.lol",
+      "server_port": 8388,
       "method": "chacha20-ietf-poly1305",
-      "password": "irblau2suGHOMn3F"
+      "password": "K7FDFH5fXL4eoxXt"
     },
     {
       "type": "vmess",
-      "tag": "vmess-JP-Tokyo",
-      "server": "free-ss.site",
-      "server_port": 10088,
-      "uuid": "c6f46755-b2d6-498f-819c-08cfeaaa5a26",
+      "tag": "vmess-XX-Unknown",
+      "server": "www.darkroom.lol",
+      "server_port": 8080,
+      "uuid": "89dda702-df16-4305-8e03-333b30dac242",
       "security": "auto",
       "transport": {
         "type": "ws",
         "path": "/vmess",
         "headers": {
-          "Host": "free-ss.site"
+          "Host": "www.darkroom.lol"
         }
       },
       "tls": {
         "enabled": true,
-        "server_name": "free-ss.site"
+        "server_name": "www.darkroom.lol"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-XX-Unknown",
+      "server": "server31.beheshtbaneh.com",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "7ZKBwNPaqwH2zLkR"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-XX-Unknown",
+      "server": "server31.beheshtbaneh.com",
+      "server_port": 8880,
+      "uuid": "75aec5be-5d24-4d1a-9d36-45208687b069",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "server31.beheshtbaneh.com"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "server31.beheshtbaneh.com"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-US-Unknown",
+      "server": "data-us-v1.shwjfkw.cn",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "t8Jn2dIanyWuwxBq"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-US-Unknown",
+      "server": "data-us-v1.shwjfkw.cn",
+      "server_port": 20401,
+      "uuid": "8d124541-2233-4c7d-bbd0-afe6c4463d58",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "data-us-v1.shwjfkw.cn"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "data-us-v1.shwjfkw.cn"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-XX-Unknown",
+      "server": "104.21.82.183",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "H2DovD0KpvtfNVrg"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-XX-Unknown",
+      "server": "104.21.82.183",
+      "server_port": 8880,
+      "uuid": "09a6d5a5-156d-4d6f-abd3-148a18d14f6b",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "104.21.82.183"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "104.21.82.183"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-GB-Unknown",
+      "server": "gov.uk",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "SZFShBybMof0V47P"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-GB-Unknown",
+      "server": "gov.uk",
+      "server_port": 443,
+      "uuid": "e4bd7f53-b34a-4431-814f-e883aaa2b614",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "gov.uk"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "gov.uk"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-XX-Unknown",
+      "server": "server32.beheshtbaneh.com",
+      "server_port": 8388,
+      "method": "chacha20-ietf-poly1305",
+      "password": "sLJ2fPapcbbnSxWd"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-XX-Unknown",
+      "server": "server32.beheshtbaneh.com",
+      "server_port": 8880,
+      "uuid": "510729b7-bab2-4282-8b72-185346c778f0",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "server32.beheshtbaneh.com"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "server32.beheshtbaneh.com"
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-XX-Unknown",
+      "server": "173.244.56.9",
+      "server_port": 443,
+      "method": "chacha20-ietf-poly1305",
+      "password": "eTZygdCFtBEtSwmX"
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-XX-Unknown",
+      "server": "173.244.56.9",
+      "server_port": 10086,
+      "uuid": "34000c69-be78-4917-95cd-1220e99b5527",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "173.244.56.9"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "173.244.56.9"
       }
     }
   ],

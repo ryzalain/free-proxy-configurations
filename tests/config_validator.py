@@ -160,21 +160,27 @@ class ConfigValidator:
     def validate_subscription_format(self, content: str) -> bool:
         """Validate the format of a proxy subscription file."""
         self.info.append("Validating subscription content...")
+        
+        # Try to detect if content is base64 encoded or plain text
         try:
+            # First, try to decode as base64
             decoded_content = base64.b64decode(content).decode("utf-8")
             urls = decoded_content.strip().splitlines()
-            if not urls:
-                self.errors.append("Subscription is empty after decoding.")
-                return False
-            
-            valid_urls = sum(1 for url in urls if self._validate_proxy_url(url))
-            self.info.append(f"Found {valid_urls} valid proxy URLs out of {len(urls)}.")
-            if valid_urls == 0:
-                self.errors.append("No valid proxy URLs found in subscription.")
-            return valid_urls > 0
-        except (binascii.Error, UnicodeDecodeError) as e:
-            self.errors.append(f"Failed to decode Base64 subscription: {e}")
+            self.info.append("Detected base64 encoded subscription.")
+        except (ValueError, UnicodeDecodeError):
+            # If base64 decoding fails, treat as plain text
+            urls = content.strip().splitlines()
+            self.info.append("Detected plain text subscription.")
+        
+        if not urls:
+            self.errors.append("Subscription is empty.")
             return False
+        
+        valid_urls = sum(1 for url in urls if self._validate_proxy_url(url))
+        self.info.append(f"Found {valid_urls} valid proxy URLs out of {len(urls)}.")
+        if valid_urls == 0:
+            self.errors.append("No valid proxy URLs found in subscription.")
+        return valid_urls > 0
 
     def test_connectivity(self, config_path: str) -> bool:
         """Test connectivity for all outbounds in a config file."""

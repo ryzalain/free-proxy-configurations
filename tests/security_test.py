@@ -107,3 +107,4 @@ class SecurityTester:
             if response.ok and response.text.strip():
                 print(f"   └── ⚠️ IPv6 connection detected: {response.text.strip()}")
                 return
+
